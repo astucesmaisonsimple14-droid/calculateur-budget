@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Calculateur de Coût d'un Crédit</title>
+<title>Calculateur de Budget Mensuel</title>
 <style>
   :root {
     --cream: #FAF6F0;
@@ -72,22 +72,15 @@
     border: 1px solid var(--line);
   }
   .result .amount {
-    font-size: 1.8rem;
+    font-size: 2rem;
     font-weight: 700;
     margin: 4px 0;
-    color: var(--terracotta-dark);
   }
+  .positive { color: var(--green); }
+  .negative { color: var(--red); }
   .result .label {
     font-size: 0.85rem;
     color: #8a7f70;
-  }
-  .detail {
-    margin-top: 16px;
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.85rem;
-    padding: 6px 0;
-    border-top: 1px solid var(--line);
   }
   .nav {
     text-align: center;
@@ -113,39 +106,43 @@
 </head>
 <body>
   <div class="card">
-    <h1>🏦 Coût Réel d'un Crédit</h1>
-    <p class="sub">Découvrez la mensualité et le coût total de votre emprunt.</p>
+    <h1>💰 Calculateur de Budget Mensuel</h1>
+    <p class="sub">Entrez vos revenus et dépenses pour voir ce qu'il vous reste.</p>
 
-    <label for="montant">Montant emprunté (€)</label>
-    <input type="number" id="montant" placeholder="Ex : 10000" oninput="calculer()">
+    <label for="revenu">Revenus mensuels (€)</label>
+    <input type="number" id="revenu" placeholder="Ex : 1800" oninput="calculer()">
 
     <div class="row">
       <div>
-        <label for="taux">Taux annuel (%)</label>
-        <input type="number" id="taux" step="0.01" placeholder="Ex : 4.5" oninput="calculer()">
+        <label for="loyer">Loyer / Crédit (€)</label>
+        <input type="number" id="loyer" placeholder="Ex : 600" oninput="calculer()">
       </div>
       <div>
-        <label for="duree">Durée (mois)</label>
-        <input type="number" id="duree" placeholder="Ex : 48" oninput="calculer()">
+        <label for="charges">Charges (€)</label>
+        <input type="number" id="charges" placeholder="Ex : 150" oninput="calculer()">
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="alimentation">Alimentation (€)</label>
+        <input type="number" id="alimentation" placeholder="Ex : 300" oninput="calculer()">
+      </div>
+      <div>
+        <label for="autres">Autres dépenses (€)</label>
+        <input type="number" id="autres" placeholder="Ex : 200" oninput="calculer()">
       </div>
     </div>
 
     <div class="result">
-      <div class="label">Mensualité estimée</div>
-      <div class="amount" id="mensualite">—</div>
-      <div class="detail">
-        <span>Coût total du crédit</span>
-        <strong id="coutTotal">—</strong>
-      </div>
-      <div class="detail">
-        <span>Total des intérêts</span>
-        <strong id="interets">—</strong>
-      </div>
+      <div class="label">Il vous reste chaque mois</div>
+      <div class="amount" id="resultat">0 €</div>
+      <div class="label" id="message"></div>
     </div>
 
     <div class="nav">
-      <a href="index.html">Calculateur de budget</a> ·
       <a href="calculateur-epargne.html">Calculateur d'épargne</a> ·
+      <a href="calculateur-credit.html">Coût d'un crédit</a> ·
       <a href="apropos.html">À propos</a> ·
       <a href="mentions-legales.html">Mentions légales</a>
     </div>
@@ -155,36 +152,27 @@
 
   <script>
     function calculer() {
-      const montant = parseFloat(document.getElementById('montant').value) || 0;
-      const tauxAnnuel = parseFloat(document.getElementById('taux').value) || 0;
-      const duree = parseInt(document.getElementById('duree').value) || 0;
+      const revenu = parseFloat(document.getElementById('revenu').value) || 0;
+      const loyer = parseFloat(document.getElementById('loyer').value) || 0;
+      const charges = parseFloat(document.getElementById('charges').value) || 0;
+      const alimentation = parseFloat(document.getElementById('alimentation').value) || 0;
+      const autres = parseFloat(document.getElementById('autres').value) || 0;
 
-      const mensualiteEl = document.getElementById('mensualite');
-      const coutTotalEl = document.getElementById('coutTotal');
-      const interetsEl = document.getElementById('interets');
+      const total = loyer + charges + alimentation + autres;
+      const reste = revenu - total;
 
-      if (montant <= 0 || duree <= 0) {
-        mensualiteEl.textContent = '—';
-        coutTotalEl.textContent = '—';
-        interetsEl.textContent = '—';
-        return;
-      }
+      const resultatEl = document.getElementById('resultat');
+      const messageEl = document.getElementById('message');
 
-      const tauxMensuel = tauxAnnuel / 100 / 12;
-      let mensualite;
+      resultatEl.textContent = reste.toFixed(2) + ' €';
 
-      if (tauxMensuel === 0) {
-        mensualite = montant / duree;
+      if (reste >= 0) {
+        resultatEl.className = 'amount positive';
+        messageEl.textContent = reste > 0 ? "Vous êtes dans les clous 👍" : "Budget à l'équilibre";
       } else {
-        mensualite = montant * tauxMensuel / (1 - Math.pow(1 + tauxMensuel, -duree));
+        resultatEl.className = 'amount negative';
+        messageEl.textContent = "Attention, vous dépensez plus que vos revenus";
       }
-
-      const coutTotal = mensualite * duree;
-      const interets = coutTotal - montant;
-
-      mensualiteEl.textContent = mensualite.toFixed(2) + ' € / mois';
-      coutTotalEl.textContent = coutTotal.toFixed(2) + ' €';
-      interetsEl.textContent = interets.toFixed(2) + ' €';
     }
   </script>
 </body>
