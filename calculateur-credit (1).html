@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculateur de Coût d'un Crédit</title>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3169883354146333" crossorigin="anonymous"></script>
+<style>
+  :root {
+    --cream: #FAF6F0;
+    --terracotta: #C97B5A;
+    --terracotta-dark: #A8613F;
+    --green: #6B8F71;
+    --red: #C15C5C;
+    --ink: #3A3229;
+    --line: #E4D9CC;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    display: flex;
+    justify-content: center;
+    padding: 40px 16px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 460px;
+    width: 100%;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  }
+  h1 {
+    font-size: 1.4rem;
+    margin: 0 0 4px;
+    color: var(--terracotta-dark);
+  }
+  p.sub {
+    margin: 0 0 24px;
+    font-size: 0.9rem;
+    color: #8a7f70;
+  }
+  label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin: 16px 0 6px;
+  }
+  input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input:focus { border-color: var(--terracotta); }
+  .row {
+    display: flex;
+    gap: 12px;
+  }
+  .row > div { flex: 1; }
+  .result {
+    margin-top: 28px;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    background: var(--cream);
+    border: 1px solid var(--line);
+  }
+  .result .amount {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 4px 0;
+    color: var(--terracotta-dark);
+  }
+  .result .label {
+    font-size: 0.85rem;
+    color: #8a7f70;
+  }
+  .detail {
+    margin-top: 16px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    padding: 6px 0;
+    border-top: 1px solid var(--line);
+  }
+  .nav {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.85rem;
+  }
+  .nav a {
+    color: var(--terracotta-dark);
+    text-decoration: none;
+    margin: 0 8px;
+  }
+  .nav a:hover { text-decoration: underline; }
+  .ad-placeholder {
+    margin-top: 24px;
+    padding: 14px;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #b0a794;
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>🏦 Coût Réel d'un Crédit</h1>
+    <p class="sub">Découvrez la mensualité et le coût total de votre emprunt.</p>
+
+    <label for="montant">Montant emprunté (€)</label>
+    <input type="number" id="montant" placeholder="Ex : 10000" oninput="calculer()">
+
+    <div class="row">
+      <div>
+        <label for="taux">Taux annuel (%)</label>
+        <input type="number" id="taux" step="0.01" placeholder="Ex : 4.5" oninput="calculer()">
+      </div>
+      <div>
+        <label for="duree">Durée (mois)</label>
+        <input type="number" id="duree" placeholder="Ex : 48" oninput="calculer()">
+      </div>
+    </div>
+
+    <div class="result">
+      <div class="label">Mensualité estimée</div>
+      <div class="amount" id="mensualite">—</div>
+      <div class="detail">
+        <span>Coût total du crédit</span>
+        <strong id="coutTotal">—</strong>
+      </div>
+      <div class="detail">
+        <span>Total des intérêts</span>
+        <strong id="interets">—</strong>
+      </div>
+    </div>
+
+    <div class="nav">
+      <a href="index.html">Calculateur de budget</a> ·
+      <a href="calculateur-epargne.html">Calculateur d'épargne</a> ·
+      <a href="apropos.html">À propos</a> ·
+      <a href="mentions-legales.html">Mentions légales</a>
+    </div>
+
+    <div class="ad-placeholder">— emplacement publicité (Google AdSense) —</div>
+  </div>
+
+  <script>
+    function calculer() {
+      const montant = parseFloat(document.getElementById('montant').value) || 0;
+      const tauxAnnuel = parseFloat(document.getElementById('taux').value) || 0;
+      const duree = parseInt(document.getElementById('duree').value) || 0;
+
+      const mensualiteEl = document.getElementById('mensualite');
+      const coutTotalEl = document.getElementById('coutTotal');
+      const interetsEl = document.getElementById('interets');
+
+      if (montant <= 0 || duree <= 0) {
+        mensualiteEl.textContent = '—';
+        coutTotalEl.textContent = '—';
+        interetsEl.textContent = '—';
+        return;
+      }
+
+      const tauxMensuel = tauxAnnuel / 100 / 12;
+      let mensualite;
+
+      if (tauxMensuel === 0) {
+        mensualite = montant / duree;
+      } else {
+        mensualite = montant * tauxMensuel / (1 - Math.pow(1 + tauxMensuel, -duree));
+      }
+
+      const coutTotal = mensualite * duree;
+      const interets = coutTotal - montant;
+
+      mensualiteEl.textContent = mensualite.toFixed(2) + ' € / mois';
+      coutTotalEl.textContent = coutTotal.toFixed(2) + ' €';
+      interetsEl.textContent = interets.toFixed(2) + ' €';
+    }
+  </script>
+</body>
+</html>
